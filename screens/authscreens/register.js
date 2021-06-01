@@ -1,6 +1,7 @@
 import React, { Component } from 'react';
 import { StyleSheet, View, TextInput, Text, ActivityIndicator, TouchableOpacity, Image, KeyboardAvoidingView, TouchableWithoutFeedback, Platform, Keyboard  } from 'react-native';
 
+const registerFWuser = 'http://192.168.254.114:8080/api/registerFWuser';
 
 export default class register extends Component {
   static navigationOptions = {
@@ -11,26 +12,20 @@ export default class register extends Component {
     },
     headerTitleStyle: {
       color: 'white'
-    },   
+    },
 }
     constructor()
     {
         super();
- 
         this.state = { 
- 
           Username: '', 
- 
           Password: '', 
-          
           re_password: '',
- 
           ActivityIndicator_Loading: false, 
- 
         }
     }
 
-    Insert_Data_Into_MySQL = () =>
+  Insert_Data_Into_MySQL = () =>
     {
         const { Username, Password, re_password } = this.state;
         let passwrd_regex = /[a-zA-Z0-9]{8}/gm;
@@ -63,7 +58,7 @@ export default class register extends Component {
               {
                 this.setState({ ActivityIndicator_Loading : true }, () =>
                {
-                fetch('http://192.168.254.112:8080/api/registerFWuser',
+                fetch(registerFWuser,
                 {
                     method: 'POST',
                     headers: 

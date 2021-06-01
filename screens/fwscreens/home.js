@@ -1,6 +1,6 @@
 import React, { Component } from 'react';
-import { StyleSheet, Text, View, TextInput, TouchableOpacity, ActivityIndicator, FlatList, Alert, TouchableHighlight, LogBox  } from 'react-native';
-import { Container,  Header, Content, Icon, Right, Button, Input, Item, Picker, Form, Left, Card, CardItem, Thumbnail, Body, Footer, FooterTab, Drawer, ActionSheet, Root, Badge} from 'native-base';
+import { StyleSheet, Text, View, TouchableOpacity, ActivityIndicator, FlatList, Alert, TouchableHighlight, LogBox  } from 'react-native';
+import { Header, Content, Right, Button, Left, Card, CardItem, Thumbnail, Body, Footer, FooterTab, Drawer, ActionSheet, Root} from 'native-base';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import SideBar from './menu.js';
 import moment from "moment";
@@ -11,19 +11,7 @@ import * as Notifications from 'expo-notifications';
 import { FontAwesomeIcon } from '@fortawesome/react-native-fontawesome'
 import { faHome,faUser,faBell, faAlignLeft, faSortDown, faCheck, faChevronUp, faPen, faComment, faBars, faChevronDown } from '@fortawesome/free-solid-svg-icons';
 
-
-
-
-// import { YellowBox } from 'react-native'
-// console.disableYellowBox = true;
-
-/*
-YellowBox.ignoreWarnings([
-	'Warning: Failed child context type:', // TODO: Remove when fixed
-])*/
-
 LogBox.ignoreAllLogs()
-
 Notifications.setNotificationHandler({
   handleNotification: async () => ({
     shouldShowAlert: true,
@@ -31,19 +19,22 @@ Notifications.setNotificationHandler({
     shouldSetBadge: false,
   }),
 });
-             
-const url = 'http://192.168.254.112:8080/api/getRecentPost';
-const url2 = 'http://192.168.254.112:8080/api/getTrendingPost';
 
-const url3 = 'http://192.168.254.112:8080/api/checkUpvotePost';
-const url6 = 'http://192.168.254.112:8080/api/checkDownvotePost';
+//add token for push notification
+const addTokenToUser = 'http://192.168.254.112:8080/api/addTokenToUser';
 
-const url5 = 'http://192.168.254.112:8080/api/addTokenToUser';
+//get post api       
+const getRecentPosturl = 'http://192.168.254.114:8080/api/getRecentPost';
+const getTrendingPosturl = 'http://192.168.254.114:8080/api/getTrendingPost';
 
-const url_upvotePost = 'http://192.168.254.112:8080/api/mobileUpvotePost';
-const url_downvotePost = 'http://192.168.254.112:8080/api/mobileDownvotePost';
+//fetch current user votes api
+const checkUpvotePost = 'http://192.168.254.114:8080/api/checkUpvotePost';
+const checkDownvotePost = 'http://192.168.254.114:8080/api/checkDownvotePost';
 
-const url4 = 'http://192.168.254.112:8080/api/check_notif_count';
+//vote a post
+const url_upvotePost = 'http://192.168.254.114:8080/api/mobileUpvotePost';
+const url_downvotePost = 'http://192.168.254.114:8080/api/mobileDownvotePost';
+
 
 var BUTTONS = ["Most recent posts", "Most popular posts"];
 var DESTRUCTIVE_INDEX = 0;
@@ -51,52 +42,48 @@ var CANCEL_INDEX = 4;
 
 export default class home extends Component {
 
-  static navigationOptions = 
-  {
-      headerShown: false,
-  }
+static navigationOptions = 
+{
+  headerShown: false,
+}
+
 closeDrawer() {
   this.drawer._root.close()
 };
+
 openDrawer(){
   this.drawer._root.open()
 };
 
-
-_logout = async() => {
+_logout = async() => 
+{
     await AsyncStorage.clear();
     this.props.navigation.navigate('Auth');
-  }
+}
    
 
-
 constructor(props) {
-    
     super(props);
     this.state = {
-  //    selected: "key1",
       isLoading: true,
       username: '',
       isFetching: false,
-   //   anonz: '',
       voteIndicator: false,
       iconColor: 'gray',
       isLoading2: true,
       isFetching2: false,
       sortedPost: false,
-      //upvotedPost: [],
       myids: [],
       myids2: [],
       dataSource: '',
       dataSource2: '',
-   //   allids: '',
-      notification_count: '',
-      notifcounter: [],
     };
   }
+
  _isMounted = false;
 
-   componentDidMount() {
+   componentDidMount() 
+   {
     this._isMounted = true;
     this.registerForPushNotificationsAsync();
     this.fetchpostall();
@@ -105,15 +92,13 @@ constructor(props) {
     this.getUserId().then((userD) => {
       this.setState({username: userD});
     });
-
     this.props.navigation.addListener('willFocus',this._handleStateChange);
-    this.fetchpostall();
   }
 
-   componentWillUnmount() {
+   componentWillUnmount()
+   {
      this._isMounted = false;
-  }
-
+   }
 
    _handleStateChange = state => {
      this.fetchpostall();
@@ -121,8 +106,8 @@ constructor(props) {
    };
   
 
-  registerForPushNotificationsAsync = async () => {
-    
+  registerForPushNotificationsAsync = async () => 
+  {  
     let token;
     if (Constants.isDevice) {
       const { status: existingStatus } = await Notifications.getPermissionsAsync();
@@ -149,8 +134,7 @@ constructor(props) {
         lightColor: '#FF231F7C',
       });
     }
-
-    return fetch(url5,{
+    return fetch(addTokenToUser,{
       method: 'POST',
       headers: {
        'Accept': 'application/json, text/plain, */*',
@@ -169,9 +153,6 @@ constructor(props) {
         console.error(error);
     });
   }
-
-
-
 
   getUserId = async () => {
     let userD = await AsyncStorage.getItem('userDetails');
@@ -195,7 +176,7 @@ constructor(props) {
 
    fetchpostall = async () =>
    {
-    return fetch(url)
+    return fetch(getRecentPosturl)
     .then((response) => response.json())
     .then((responseJson) => {
       this.setState({
@@ -213,7 +194,7 @@ constructor(props) {
 
    sortPost = async () =>
    {
-    return fetch(url2)
+    return fetch(getTrendingPosturl)
     .then((response) => response.json())
     .then((responseJson2) => {
       this.setState({
@@ -222,14 +203,13 @@ constructor(props) {
         isFetching2: false,
         sortedPost: true,
       }, function() {
-        // In this block you can do something with new state.
+        // 
       });
     })
     .catch((error) => {
       console.error(error);
     });
    }
-
 
 FlatListItemSeparator = () => {
   return (
@@ -269,17 +249,15 @@ postcolordownvoted(item)
 
 viewupvotedPost = async () =>
 {
-return fetch(url3)
+return fetch(checkUpvotePost)
   .then((response) => response.json())
   .then((responseJson) => {
     let filteredResponseJson = responseJson.filter(votes => votes.username == this.state.username )
     this.setState({
       myids: filteredResponseJson
-     
     }, function() {
-      // In this block you can do something with new state.
+      // 
     });
-
   })
   .catch((error) => {
     console.error(error);
@@ -288,35 +266,14 @@ return fetch(url3)
 
 viewdownvotedpost = async () =>
 {
-return fetch(url6)
+return fetch(checkDownvotePost)
   .then((response) => response.json())
   .then((responseJson) => {
     let filteredResponseJson2 = responseJson.filter(votes => votes.username == this.state.username )
     this.setState({
       myids2: filteredResponseJson2
     }, function() {
-      // In this block you can do something with new state.
-    });
-
-  })
-  .catch((error) => {
-    console.error(error);
-  });
-}
-
-
-viewnotifcounter = async () =>
-{
-  return fetch(url4)
-  .then((response) => response.json())
-  .then((responseJson) => {
-    let filteredResponseJson = responseJson.filter(notif_count => notif_count.user_post == this.state.username )
-    this.setState({
-     // notification_count: filteredResponseJson,
-     // notifcounter: filteredResponseJson,
-      notifcounter: filteredResponseJson,
-    }, function() {
-      
+      //
     });
   })
   .catch((error) => {
@@ -347,15 +304,13 @@ upvotePost = async (id) =>
       if (this.state.sortedPost === true)
         {
           this.sortPost();
-          this.viewupvotedPost();
-         this.viewdownvotedpost();
         }
       else
         {
           this.fetchpostall();
-          this.viewupvotedPost();
-          this.viewdownvotedpost();
         }
+    this.viewupvotedPost();
+    this.viewdownvotedpost();
   }).catch((error) =>
   {
       console.error(error);
@@ -385,15 +340,13 @@ downvotePost = async (id) =>
       if (this.state.sortedPost === true)
         {
           this.sortPost();
-          this.viewupvotedPost();
-         this.viewdownvotedpost();
         }
       else
         {
           this.fetchpostall();
-          this.viewupvotedPost();
-         this.viewdownvotedpost();
         }
+      this.viewupvotedPost();
+      this.viewdownvotedpost();
   }).catch((error) =>
   {
       console.error(error);
@@ -412,75 +365,70 @@ this.sortPost();
 
 render(){
  
-  if (this.state.isLoading) {
-      return (
-        <View style={{flex: 1, paddingTop: 20}}>
-          <ActivityIndicator />
-        </View>
-      );
-    }
-    return (
-      
+if(this.state.isLoading) 
+{
+  return (
+   <View style={{flex: 1, paddingTop: 20}}>
+       <ActivityIndicator />
+   </View>
+  );
+}
+return(  
 <Drawer ref={(ref) => { this.drawer = ref; }}
  content={<SideBar navigate= {this.props.navigation.navigate} />}
   onClose={() => this.closeDrawer()} >
     
 <View style={{flex: 1}}>
 <Header style={{backgroundColor: "#A94C4C", height:50, marginTop: 10}}>
-          <Left>
-          <Button 
-              transparent
-          onPress={() => this.openDrawer()}>
-          <FontAwesomeIcon icon={faBars} color={"white"} />
-        </Button>
-        </Left>
-          <Body>
-            <Text style={{color:"white", fontSize: 20, marginLeft: -30 }}>Home</Text>
-          </Body>
-          <Right />
-        </Header>
-       
-
+  <Left>
+    <Button 
+      transparent
+      onPress={() => this.openDrawer()}>
+     <FontAwesomeIcon icon={faBars} color={"white"} />
+    </Button>
+  </Left>
+      <Body>
+        <Text style={{color:"white", fontSize: 20, marginLeft: -30 }}>Home</Text>
+      </Body>
+  <Right />
+</Header>
 <View style={{ flexDirection: 'column', height: 35}}>
-               <Root>
-                <TouchableOpacity style={styles.sort}
-                 onPress={this.handlePress,
-                  () => ActionSheet.show({
-                    options: BUTTONS,
-                    cancelButtonIndex: CANCEL_INDEX,
-                    destructiveButtonIndex: DESTRUCTIVE_INDEX,
-                    //title: "Sort Post",
-                  },
-                    buttonIndex => { 
-                      if(buttonIndex === 0)
-                       {
-                        this.recent()
-                       }
-                       else if(buttonIndex === 1)
-                       {
-                         this.pop()
-                       }
-                    }
-                  )} >
-                <View style={{flexDirection: 'row', justifyContent: 'flex-end', alignContent: 'center' }}>
-                <FontAwesomeIcon icon={faAlignLeft} style={{ fontSize: 15, paddingBottom: 5, }} />
-                <Text> Sort Post </Text>
-                <FontAwesomeIcon icon={faSortDown } style={{ fontSize: 15, paddingBottom: 5, }} />
-                </View>
-                 </TouchableOpacity >
-                 </Root>
-                 </View>
-            <TouchableHighlight  style={{ height:5,}} onPressOut = {this.fetchpostall}>
-                        <Text></Text>
-            </TouchableHighlight>
-         <FlatList
-          data={ this.state.dataSource }
-          extraData={this.state.dataSource}
-          onRefresh={() => this.onRefresh()}
-          refreshing={this.state.isFetching}
-          ItemSeparatorComponent = {this.FlatListItemSeparator}
-          renderItem=
-          {({item}) => 
+  <Root>
+    <TouchableOpacity style={styles.sort}
+      onPress={this.handlePress,
+      () => ActionSheet.show({
+        options: BUTTONS,
+        cancelButtonIndex: CANCEL_INDEX,
+        destructiveButtonIndex: DESTRUCTIVE_INDEX, },
+             buttonIndex => { 
+              if(buttonIndex === 0){
+                   this.recent()
+                }
+              else if(buttonIndex === 1){
+                   this.pop()
+                }}
+     )}>
+      <View style={{flexDirection: 'row', justifyContent: 'flex-end', alignContent: 'center' }}>
+        <FontAwesomeIcon icon={faAlignLeft} style={{ fontSize: 15, paddingBottom: 5, }} />
+          <Text> Sort Post </Text>
+        <FontAwesomeIcon icon={faSortDown } style={{ fontSize: 15, paddingBottom: 5, }} />
+      </View>
+    </TouchableOpacity >
+  </Root>
+</View>
+
+<TouchableHighlight  style={{ height:5,}} onPressOut = {this.fetchpostall}>
+            <Text></Text>
+</TouchableHighlight>
+
+<FlatList
+   data={ this.state.dataSource }
+   extraData={this.state.dataSource}
+   onRefresh={() => this.onRefresh()}
+   refreshing={this.state.isFetching}
+   ItemSeparatorComponent = {this.FlatListItemSeparator}
+   renderItem=
+    {({item}) => 
           <Content>
           <Card style={{flex: 0}}>
             <CardItem>
@@ -536,46 +484,40 @@ render(){
                 </Right>
             </CardItem>
           </Card>
-         
         </Content>
-        
           }
-          keyExtractor={(item, index) => index.toString()}
-          />
+keyExtractor={(item, index) => index.toString()}
+/>
         
-       
-        <View style={{ flexDirection: 'column', flex: 1, marginRight: 10 }}>
-        <TouchableOpacity style={styles.add} onPress={() => this.props.navigation.navigate('CreatePage')}>
-        <FontAwesomeIcon
-                    icon={faPen} style={{color:'white', fontSize: 22}} />
-        </TouchableOpacity>
-        </View>
-
-        <Footer style={styles.footer}>
-          <FooterTab style={{backgroundColor:'white'}}>
-            <Button>
-            <FontAwesomeIcon
-               icon={faHome } style={{color:'#A94C4C'}} />
-              <Text>Home</Text>
-            </Button>
-            <Button  onPress={() => this.props.navigation.navigate('Profile')}>
-            <FontAwesomeIcon style={{color:'gray'}} icon={faUser} />
-              <Text>Profile</Text>
-            </Button>
-            <Button badge vertical onPress={() => this.props.navigation.navigate('Notification')}>
-             {/* <Badge style={{backgroundColor: '#A94C4C', marginBottom: -15}}><Text style={{color: 'white', fontSize: 10}}>2</Text></Badge> */}
-            <FontAwesomeIcon  style={{color:'gray'}} icon={faBell} />
-                <Text> Notification</Text>
-            </Button>
-          </FooterTab>
-        </Footer>
-        
-          </View>
-          </Drawer>
+<View style={{ flexDirection: 'column', flex: 1, marginRight: 10 }}>
+  <TouchableOpacity style={styles.add} onPress={() => this.props.navigation.navigate('CreatePage')}>
+    <FontAwesomeIcon
+      icon={faPen} style={{color:'white', fontSize: 22}} />
+  </TouchableOpacity>
+</View>
+  <Footer style={styles.footer}>
+    <FooterTab style={{backgroundColor:'white'}}>
+      <Button>
+              <FontAwesomeIcon
+                icon={faHome } style={{color:'#A94C4C'}} />
+                <Text>Home</Text>
+      </Button>
+      <Button  onPress={() => this.props.navigation.navigate('Profile')}>
+              <FontAwesomeIcon style={{color:'gray'}} icon={faUser} />
+                <Text>Profile</Text>
+      </Button>
+      <Button badge vertical onPress={() => this.props.navigation.navigate('Notification')}>
+              {/* <Badge style={{backgroundColor: '#A94C4C', marginBottom: -15}}><Text style={{color: 'white', fontSize: 10}}>2</Text></Badge> */}
+              <FontAwesomeIcon  style={{color:'gray'}} icon={faBell} />
+                  <Text> Notification</Text>
+      </Button>
+    </FooterTab>
+  </Footer>
+</View>
+</Drawer>
     );
   }
 }
-
 
 const styles = StyleSheet.create({
   container: {

@@ -3,6 +3,8 @@ import { StyleSheet, Text, View, TextInput, TouchableOpacity, ActivityIndicator,
 import { Container, Header, Content, Icon, Button, ListItem, CheckBox, Body, Textarea, Form } from 'native-base';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 
+const store_post = 'http://192.168.254.114:8080/api/store_post';
+
 export default class createpage extends Component {
   static navigationOptions = {
     title: 'Create Post',
@@ -25,21 +27,15 @@ constructor()
       switchValue: true,
       anonym: 'Anonymous',
       anonym2: ''
-      
     }
 }
 
-
-toggleSwitch = (value) => {
-      //onValueChange of the switch this function will be called
-      this.setState({switchValue: value})
-     // this.setState({anonym: this.state.username})
-      //state changes according to switch
-      //which will result in re-render the text
-   }
+toggleSwitch = (value) => 
+{   
+   this.setState({switchValue: value})
+}
    
-
-   siwtchz = () =>
+siwtchz = () =>
    {
       if (this.state.switchValue === true){
         alert(this.state.anonym);
@@ -51,7 +47,7 @@ toggleSwitch = (value) => {
       }
    }
 
-Insert_Data_Into_MySQL2 = () =>
+   Insert_Data_Into_MySQL2 = () =>
 {
   const {  Description } = this.state;
   const {  Title } = this.state;
@@ -64,8 +60,7 @@ Insert_Data_Into_MySQL2 = () =>
             if (this.state.switchValue === true){
               this.setState({ ActivityIndicator_Loading : true }, () =>
               {
-               // fetch('http://localhost:8000/api/store_post',
-               fetch('http://192.168.254.112:8080/api/store_post',
+               fetch(store_post,
                   {
                       method: 'POST',
                       headers: 
@@ -98,8 +93,7 @@ Insert_Data_Into_MySQL2 = () =>
       {
           this.setState({ ActivityIndicator_Loading : true }, () =>
       {
-      // fetch('http://localhost:8000/api/store_post',
-      fetch('http://192.168.254.112:8080/api/store_post',
+      fetch(store_post,
           {
               method: 'POST',
               headers: 
@@ -143,10 +137,7 @@ getUserId = async () => {
   return userD;
 }
 
-
-
 render()
-
 {    
     return (
       <KeyboardAvoidingView

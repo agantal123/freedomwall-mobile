@@ -6,6 +6,8 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 import { FontAwesomeIcon } from '@fortawesome/react-native-fontawesome'
 import { faHome, faSignOutAlt, faUnlockAlt } from '@fortawesome/free-solid-svg-icons';
 
+const deleteMyToken = 'http://192.168.254.114:8080/api/deleteMyToken';
+
 export default class menu extends Component {
   
     static navigationOptions = {
@@ -19,10 +21,9 @@ export default class menu extends Component {
             username: '',
         };
       }
-      _logout = async() => {
 
-        
-        fetch('http://192.168.254.112:8080/api/deleteMyToken',
+      _logout = async() => {
+        fetch(deleteMyToken,
           {
               method: 'POST',
               headers: 
@@ -36,8 +37,7 @@ export default class menu extends Component {
               })
           }).then((response) => response.text()).then(() =>
           {
-
-             AsyncStorage.clear();
+            AsyncStorage.clear();
             this.props.navigate('Auth');
 
           }).catch((error) =>
@@ -65,17 +65,9 @@ export default class menu extends Component {
         return userD;
       }
 
-
-      
-
-      // closeDrawer() {
-      //   this.drawer.close()
-      // };
-   
   
-    render(){
-    
-    return (
+render(){
+   return (
 <Content style={{backgroundColor: "white"}}>
 <View style={styles.upper} >
 <Thumbnail source={require('./images/photo.png')} style={{width: 40, height: 40, margin: 5}} />

@@ -3,15 +3,16 @@ import { StyleSheet, Text, View, TextInput,ActivityIndicator, TouchableOpacity,I
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import axios from 'axios';
 
+const loginUrl = 'http://192.168.254.114:8080/api/loginFWuser';
+
 export default class login extends React.Component {
-  
 static navigationOptions = 
 {
     headerShown: false,
 }
+
 constructor(props) {
     super(props)
-    
     this.state = {
       username: '',
       password: '',
@@ -24,7 +25,6 @@ constructor(props) {
   {
       const { username }  = this.state;
       const { password }  = this.state;
-      
       if(username == '' || password == '')
       {
         alert("Please enter your username and password!")
@@ -33,7 +33,7 @@ constructor(props) {
       { 
         this.setState({ ActivityIndicator_Loading : true }, () =>
         {
-            fetch('http://192.168.254.112:8080/api/loginFWuser',
+            fetch(loginUrl,
              {
               method: 'POST',
               headers: 
@@ -46,7 +46,6 @@ constructor(props) {
                 username : this.state.username,
                 password : this.state.password
               })
-
             }).then((response) => response.json())
             .then((responseJson) =>
             {
@@ -62,7 +61,6 @@ constructor(props) {
                 this.setState({ ActivityIndicator_Loading : false });
                 this.props.navigation.navigate('Home');
               }
-    
             }).catch((error) =>
             {
                 console.error(error);
@@ -114,7 +112,6 @@ render(){
       </View>
     );
   }
-
 }
 
 const styles = StyleSheet.create({

@@ -1,6 +1,6 @@
 import React, { Component } from "react";
-import { StyleSheet, Text, View, TextInput, TouchableOpacity, ActivityIndicator, ListView, Alert, FlatList, TouchableHighlight, ActionSheetIOS   } from 'react-native';
-import { Container, Content, Icon, Right, Button, Input, Item, Picker, Form, Left, Card, CardItem, Thumbnail, Body, Footer, FooterTab, Label, ActionSheet, Root, Badge } from 'native-base';
+import { StyleSheet, Text, View, TouchableOpacity, ActivityIndicator, FlatList, TouchableHighlight } from 'react-native';
+import { Container, Content, Right, Button, Form, Left, Card, CardItem, Thumbnail, Body, Footer, FooterTab, ActionSheet, Root } from 'native-base';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import moment from "moment";
 
@@ -8,12 +8,12 @@ import { FontAwesomeIcon } from '@fortawesome/react-native-fontawesome'
 import { faHome,faUser,faBell, faPen, faUnlockAlt, faAngleDown, faCheck, faChevronUp, faComment, faChevronDown } from '@fortawesome/free-solid-svg-icons';
 
 
-const url = 'http://192.168.254.112:8080/api/getRecentPost';
-const url3 = 'http://192.168.254.112:8080/api/checkUpvotePost';
-const url4 = 'http://192.168.254.112:8080/api/checkDownvotePost';
-
-const url_upvotePost = 'http://192.168.254.112:8080/api/mobileUpvotePost';
-const url_downvotePost = 'http://192.168.254.112:8080/api/mobileDownvotePost';
+const getRecentPost = 'http://192.168.254.114:8080/api/getRecentPost';
+const checkUpvotePost = 'http://192.168.254.114:8080/api/checkUpvotePost';
+const checkDownvotePost = 'http://192.168.254.114:8080/api/checkDownvotePost';
+const url_upvotePost = 'http://192.168.254.114:8080/api/mobileUpvotePost';
+const url_downvotePost = 'http://192.168.254.114:8080/api/mobileDownvotePost';
+const deletepost = 'http://192.168.254.114:8080/api/deleteMyPost';
 
 var BUTTONS = ["Delete Post"];
 var DESTRUCTIVE_INDEX = 0;
@@ -55,7 +55,7 @@ _isMounted = false;
 
 fetchmypostall = async () =>
 {
-  return fetch(url)
+  return fetch(getRecentPost)
   .then((response) => response.json())
   .then((responseJson) => {
     let filteredResponseJson = responseJson.filter(mypost => mypost.username == this.state.username )
@@ -66,7 +66,7 @@ fetchmypostall = async () =>
       isFetching: false,
       postId: ids,
     }, function() {
-      // In this block you can do something with new state.
+      //
     });
   })
   .catch((error) => {
@@ -200,7 +200,7 @@ postcolordownvoted(item)
 
 viewupvotedPost = async () =>
 {
-return fetch(url3)
+return fetch(checkUpvotePost)
   .then((response) => response.json())
   .then((responseJson) => {
     let filteredResponseJson = responseJson.filter(votes => votes.username == this.state.username )
@@ -220,7 +220,7 @@ return fetch(url3)
 
 viewdownvotedPost = async () =>
 {
-return fetch(url4)
+return fetch(checkDownvotePost)
   .then((response) => response.json())
   .then((responseJson) => {
     let filteredResponseJson2 = responseJson.filter(votes => votes.username == this.state.username )
@@ -239,7 +239,7 @@ return fetch(url4)
 
 deletepost = (id) =>
 {
-  fetch('http://192.168.254.112:8080/api/deleteMyPost',
+  fetch(deletepost,
   {
       method: 'POST',
       headers: 

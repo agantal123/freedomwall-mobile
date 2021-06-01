@@ -1,16 +1,15 @@
 import React, { Component } from "react";
 
-import { TabNavigator, HeaderBackButton } from "react-navigation";
-import { StyleSheet, Text, View, TextInput, TouchableOpacity, ActivityIndicator, ListView, Alert, FlatList, TouchableHighlight, ActionSheetIOS   } from 'react-native';
+import { StyleSheet, Text, View, TouchableOpacity, ActivityIndicator, FlatList, TouchableHighlight } from 'react-native';
 import { Container, Content, Icon, Right, Button, Input, Item, Picker, Form, Left, Card, CardItem, Thumbnail, Body, Footer, FooterTab, Label } from 'native-base';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import moment from "moment";
 
-
 import { FontAwesomeIcon } from '@fortawesome/react-native-fontawesome'
-import { faHome,faUser,faBell, faPen, faUnlockAlt, faCheck, faChevronUp, faComment, faChevronDown } from '@fortawesome/free-solid-svg-icons';
+import { faHome,faUser,faBell } from '@fortawesome/free-solid-svg-icons';
 
-const url = 'http://192.168.254.112:8080/api/view_my_notification';
+const view_my_notification = 'http://192.168.254.114:8080/api/view_my_notification';
+const seen_notification = 'http://192.168.254.114:8080/api/seen_notification';
 
 export default class notification extends Component {
     static navigationOptions = {
@@ -26,7 +25,6 @@ export default class notification extends Component {
 }
 
 constructor(props) {
-    
   super(props);
   this.state = {
     isLoading: true,
@@ -34,7 +32,6 @@ constructor(props) {
     isFetching: false,
     postId: '',
     voteIndicator: false,
-
   };
 }
 
@@ -56,7 +53,7 @@ onRefresh() {
 
 fetchmynotifall = async () =>
 {
-  return fetch(url)
+  return fetch(view_my_notification)
   .then((response) => response.json())
   .then((responseJson) => {
     let filteredResponseJson = responseJson.filter(mynotif => mynotif.username == this.state.username )
@@ -99,7 +96,7 @@ getUserId = async () => {
 
 
 OpenCommment(post_id,notif_id) {
-    fetch('http://192.168.254.112:8080/api/seen_notification',
+    fetch(seen_notification,
     {
         method: 'POST',
         headers: 

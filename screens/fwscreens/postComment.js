@@ -1,25 +1,24 @@
 import React, { Component } from "react";
 
-import { TabNavigator } from "react-navigation";
 import { StyleSheet, Text, View, TextInput, TouchableOpacity, ActivityIndicator, Alert, FlatList, TouchableHighlight, LogBox } from 'react-native';
-import { Container, Content, Icon, Right, Button, Input, Item, Picker, Form, Left, Card, CardItem, Thumbnail, Body, Footer, FooterTab, Label, Root, ActionSheet } from 'native-base';
+import { Container, Content, Left, Card, CardItem, Thumbnail, Body, Root, ActionSheet } from 'native-base';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import moment from "moment";
-//import { YellowBox } from 'react-native'
+
 import { FontAwesomeIcon } from '@fortawesome/react-native-fontawesome'
-import { faHome,faUser,faBell, faPen, faUnlockAlt, faAngleDown, faCheck, faChevronUp, faComment, faChevronDown,faEllipsisH,faPaperPlane } from '@fortawesome/free-solid-svg-icons';
+import { faCheck, faChevronUp, faChevronDown, faEllipsisH, faPaperPlane } from '@fortawesome/free-solid-svg-icons';
 
-// YellowBox.ignoreWarnings([
-// 	'VirtualizedLists should never be nested', // TODO: Remove when fixed
-// ])
+const viewFullpost = 'http://192.168.254.114:8080/api/viewFullpost';
+const view_comment = 'http://192.168.254.114:8080/api/view_comment';
 
-//const url = 'http://usepfw.000webhostapp.com/api/view_post';
-const url = 'http://192.168.254.112:8080/api/view_comment';
-const url3 = 'http://192.168.254.112:8080/api/checkUpvotePost';
-const url4 = 'http://192.168.254.112:8080/api/checkDownvotePost';
+const checkUpvotePost = 'http://192.168.254.114:8080/api/checkUpvotePost';
+const checkDownvotePost = 'http://192.168.254.114:8080/api/checkDownvotePost';
 
-const url_upvotePost = 'http://192.168.254.112:8080/api/mobileUpvotePost';
-const url_downvotePost = 'http://192.168.254.112:8080/api/mobileDownvotePost';
+const store_comment = 'http://192.168.254.114:8080/api/store_comment';
+const deleteMyComment = 'http://192.168.254.114:8080/api/deleteMyComment';
+
+const url_upvotePost = 'http://192.168.254.114:8080/api/mobileUpvotePost';
+const url_downvotePost = 'http://192.168.254.114:8080/api/mobileDownvotePost';
 
 var BUTTONS = ["Delete Comment"];
 var DESTRUCTIVE_INDEX = 0;
@@ -65,6 +64,7 @@ constructor(props) {
     mypost: '',
   };
 }
+
 _isMounted = false;
 
 UNSAFE_componentWillMount()
@@ -83,7 +83,7 @@ componentDidMount() {
 
 fetchmypostall = async () =>
 {
-  fetch('http://192.168.254.112:8080/api/viewFullpost', {
+  fetch(viewFullpost, {
         method: 'POST',
         headers: {
           'Accept': 'application/json',
@@ -129,7 +129,7 @@ onRefresh() {
 
 fetchcommentall = async () =>
 {
-  return fetch(url)
+  return fetch(view_comment)
   .then((response) => response.json())
   .then((responseJson) => {
     let filteredResponseJson = responseJson.filter(comments => comments.post_id == this.props.navigation.state.params.getpostid )
@@ -221,7 +221,7 @@ downvotePost = async (id) =>
 
 deletecomment = (id) =>
 {
-  fetch('http://192.168.254.112:8080/api/deleteMyComment',
+  fetch(deleteMyComment,
   {
       method: 'POST',
       headers: 
@@ -274,7 +274,7 @@ postcolordownvoted()
 
 viewupvotedPost = async () =>
 {
-return fetch(url3)
+return fetch(checkUpvotePost)
   .then((response) => response.json())
   .then((responseJson) => {
     let filteredResponseJson = responseJson.filter(votes => votes.username == this.state.username )
@@ -293,7 +293,7 @@ return fetch(url3)
 
 viewdownvotedPost = async () =>
 {
-return fetch(url4)
+return fetch(checkDownvotePost)
   .then((response) => response.json())
   .then((responseJson) => {
     let filteredResponseJson2 = responseJson.filter(votes => votes.username == this.state.username )
@@ -321,8 +321,7 @@ PostaComment = () =>
  {
   this.setState({ ActivityIndicator_Loading : true }, () =>
   {
-   // fetch('http://localhost:8000/api/store_post',
-   fetch('http://192.168.254.112:8080/api/store_comment',
+   fetch(store_comment,
       {
           method: 'POST',
           headers: 

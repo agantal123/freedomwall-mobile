@@ -1,9 +1,9 @@
 import React, { Component } from "react";
-
-import { TabNavigator } from "react-navigation";
-import { StyleSheet, Text, View, TextInput, TouchableOpacity, ActivityIndicator, Alert, FlatList, TouchableHighlight, Keyboard   } from 'react-native';
-import { Container, Content, Icon, Right, Button, Input, Item, Picker, Form, Left, Card, CardItem, Thumbnail, Body, Footer, FooterTab, Label } from 'native-base';
+import { StyleSheet, Text, View, TouchableOpacity, ActivityIndicator, Keyboard   } from 'react-native';
+import { Container, Input, Item, Form, Thumbnail, Label } from 'native-base';
 import AsyncStorage from '@react-native-async-storage/async-storage';
+
+const changepassword = 'http://192.168.254.114:8080/api/change_password';
 
 export default class change_pass extends Component {
   static navigationOptions = {
@@ -16,9 +16,7 @@ export default class change_pass extends Component {
       color: 'white'
     },
 }
-
-constructor(props) {
-    
+constructor(props) {   
   super(props);
   this.state = {
     isLoading: false,
@@ -30,10 +28,7 @@ constructor(props) {
   };
 }
 
-
 componentDidMount() {
- 
-
   this.getUserId().then((userD) => {
     this.setState({username: userD});
   })
@@ -73,8 +68,7 @@ user_changepass = async () => {
       {
         this.setState({ isLoading : true }, () =>
        {
-        // fetch('http://localhost:8000/api/store',
-        fetch('http://192.168.254.112:8080/api/change_password',
+        fetch(changepassword,
         {
             method: 'POST',
             headers: 
@@ -121,14 +115,10 @@ user_changepass = async () => {
   }
 }
 
-
-
-
 getUserId = async () => {
   let userD = await AsyncStorage.getItem('userDetails');
   return userD;
 }
-
 
 render() {
       return (
@@ -195,6 +185,7 @@ render() {
        )
    }
 }
+
 const styles = StyleSheet.create({
     container: {
       flex: 1,
