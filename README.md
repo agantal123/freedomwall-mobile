@@ -1,2 +1,2 @@
 # freedomwall-mobile
- usep freedom wall for mobile users
+ freedom wall for mobile users
